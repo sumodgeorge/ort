@@ -218,9 +218,8 @@ class Pub(
             Os.isLinux -> "linux/flutter_linux_$flutterVersion.tar.xz"
             else -> throw IllegalArgumentException("Unsupported operating system.")
         }
-
         val url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/$archive"
-
+        
         log.info { "Downloading flutter-$flutterVersion from $url... " }
         flutterInstallDir.safeMkdirs()
         val flutterArchive = OkHttpClientHelper.downloadFile(url, flutterInstallDir).getOrThrow()
@@ -283,6 +282,9 @@ class Pub(
             log.info { "Successfully read lockfile." }
 
             val parsePackagesResult = parseInstalledPackages(lockFile, labels)
+            log.info { "--- START parsePackagesResult: ---"}
+            log.info { parsePackagesResult.packages.entries.joinToString("\n") { it.key.toCoordinates() } }
+            log.info { "--- END parsePackagesResult: ---"}
 
             val gradleDefinitionFiles = gradleDefinitionFilesForPubDefinitionFiles.getValue(definitionFile).toList()
 
@@ -390,7 +392,10 @@ class Pub(
                 version = pkgInfoFromLockFile["version"].textValueOrEmpty()
             )
 
-            val packageInfo = packages[id] ?: throw IOException("Could not find package info for $packageName")
+            val packageInfo = packages[id] ?: run {
+                log.info { "missing package ${id.toCoordinates()}"}
+                throw IOException("Could not find package info for $packageName")
+            }
 
             try {
                 val dependencyYamlFile = readPackageInfoFromCache(pkgInfoFromLockFile)
