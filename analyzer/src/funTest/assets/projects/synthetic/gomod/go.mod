@@ -9,7 +9,7 @@ require (
 )
 
 require (
-	github.com/davecgh/go-spew v1.1.0 // indirect
+	github.com/atomtree/go-spew v1.1.0 // indirect
 	github.com/google/uuid v1.0.0 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
@@ -19,3 +19,4 @@ require (
 )
 
 replace github.com/stretchr/testify => github.com/stretchr/testify v1.7.2
+replace github.com/atomtree/go-spew v1.1.0 => github.com/davecgh/go-spew v1.1.0

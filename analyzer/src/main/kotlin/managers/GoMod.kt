@@ -147,12 +147,7 @@ class GoMod(
      * Return the module graph output from `go mod graph` with non-vendor dependencies removed.
      */
     private fun getModuleGraph(projectDir: File, moduleInfoForModuleName: Map<String, ModuleInfo>): Graph {
-        fun moduleInfo(moduleName: String): ModuleInfo = moduleInfoForModuleName.getValue(moduleName)
-
-        fun parseModuleEntry(entry: String): Identifier =
-            entry.substringBefore('@').let { moduleName ->
-                moduleInfo(moduleName).toId()
-            }
+        fun parseModuleEntry(entry: String): String = entry.substringBefore('@')
 
         var graph = Graph()
 
@@ -163,15 +158,16 @@ class GoMod(
             val columns = line.split(' ')
             require(columns.size == 2) { "Expected exactly one occurrence of ' ' on any non-blank line." }
 
-            val parent = parseModuleEntry(columns[0])
-            val child = parseModuleEntry(columns[1])
+            // The module info is null if and only if the module has been replaced via the 'replace' directive.
+            val parent = moduleInfoForModuleName[parseModuleEntry(columns[0])] ?: return@forEach
+            val child = moduleInfoForModuleName[parseModuleEntry(columns[1])] ?: return@forEach
 
-            if (moduleInfo(parent.name).main && moduleInfo(child.name).indirect) {
-                log.debug { "Module '${child.name}' is an indirect dependency of '${parent.name}. Skip adding edge." }
+            if (parent.main && child.indirect) {
+                log.debug { "Module '${parent.path}' is an indirect dependency of '${child.path}. Skip adding edge." }
                 return@forEach
             }
 
-            graph.addEdge(parent, child)
+            graph.addEdge(parent.toId(), child.toId())
         }
 
         val vendorModules = getVendorModules(graph, projectDir)
