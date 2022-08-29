@@ -123,6 +123,8 @@ jobs:
         context: .
         cache-from: type=gha
         cache-to: type=gha,mode=max
+    - name: Build Docker image manually
+      run: DOCKER_BUILDKIT=1 docker build .
     - name: Validate Batect wrapper scripts
       uses: batect/batect-wrapper-validation-action@v0
     - name: Run functional tests
