@@ -29,7 +29,6 @@ import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.shouldContain
-import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -40,7 +39,6 @@ import java.io.File
 import java.io.IOException
 import java.time.Instant
 
-import org.ossreviewtoolkit.evaluator.Evaluator
 import org.ossreviewtoolkit.model.AnalyzerResult
 import org.ossreviewtoolkit.model.AnalyzerRun
 import org.ossreviewtoolkit.model.Identifier
@@ -53,7 +51,6 @@ import org.ossreviewtoolkit.model.config.NotifierConfiguration
 import org.ossreviewtoolkit.model.config.RepositoryConfiguration
 import org.ossreviewtoolkit.model.config.Resolutions
 import org.ossreviewtoolkit.model.config.SendMailConfiguration
-import org.ossreviewtoolkit.model.licenses.LicenseCategorization
 import org.ossreviewtoolkit.model.licenses.LicenseClassifications
 import org.ossreviewtoolkit.model.readValue
 import org.ossreviewtoolkit.notifier.Notifier
@@ -61,7 +58,6 @@ import org.ossreviewtoolkit.reporter.HowToFixTextProvider
 import org.ossreviewtoolkit.reporter.ReporterInput
 import org.ossreviewtoolkit.reporter.reporters.freemarker.asciidoc.PdfTemplateReporter
 import org.ossreviewtoolkit.utils.ort.ORT_REPO_CONFIG_FILENAME
-import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.utils.spdx.toSpdx
 import org.ossreviewtoolkit.utils.test.createSpecTempDir
 import org.ossreviewtoolkit.utils.test.shouldNotBeNull
@@ -136,37 +132,6 @@ class ExamplesFunTest : StringSpec() {
             )
 
             report shouldHaveSize 1
-        }
-
-        "example.rules.kts can be compiled and executed" {
-            val resultFile = File("src/funTest/assets/semver4j-analyzer-result.yml")
-            val licenseClassifications = LicenseClassifications(
-                categorizations = listOf(
-                    LicenseCategorization(
-                        id = SpdxSingleLicenseExpression.parse("EPL-1.0"),
-                        categories = setOf("copyleft-limited")
-                    )
-                )
-            )
-            val ortResult = resultFile.readValue<OrtResult>()
-            val evaluator = Evaluator(
-                ortResult = ortResult,
-                licenseClassifications = licenseClassifications
-            )
-
-            val script = examplesDir.resolve("evaluator-rules/src/main/resources/example.rules.kts").readText()
-
-            val result = evaluator.run(script)
-
-            result.violations.map { it.rule } shouldContainExactlyInAnyOrder listOf(
-                "COPYLEFT_LIMITED_IN_SOURCE",
-                "DEPRECATED_SCOPE_EXCLUDE_REASON_IN_ORT_YML",
-                "HIGH_SEVERITY_VULNERABILITY_IN_PACKAGE",
-                "MISSING_CONTRIBUTING_FILE",
-                "MISSING_README_FILE_LICENSE_SECTION",
-                "UNHANDLED_LICENSE",
-                "VULNERABILITY_IN_PACKAGE"
-            )
         }
 
         "example.notifications.kts can be complied and executed" {
