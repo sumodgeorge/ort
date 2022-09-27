@@ -26,7 +26,6 @@ import java.io.File
 
 import org.ossreviewtoolkit.downloader.VersionControlSystem
 import org.ossreviewtoolkit.utils.ort.normalizeVcsUrl
-import org.ossreviewtoolkit.utils.test.AndroidTag
 import org.ossreviewtoolkit.utils.test.DEFAULT_ANALYZER_CONFIGURATION
 import org.ossreviewtoolkit.utils.test.DEFAULT_REPOSITORY_CONFIGURATION
 import org.ossreviewtoolkit.utils.test.ExpensiveTag
@@ -40,7 +39,7 @@ class GradleAndroidFunTest : StringSpec() {
     private val vcsRevision = vcsDir.getRevision()
 
     init {
-        "Root project dependencies are detected correctly".config(tags = setOf(AndroidTag)) {
+        "Root project dependencies are detected correctly" {
             val packageFile = projectDir.resolve("build.gradle")
             val expectedResult = patchExpectedResult(
                 projectDir.parentFile.resolve("gradle-android-expected-output-root.yml"),
@@ -53,7 +52,7 @@ class GradleAndroidFunTest : StringSpec() {
             result.toYaml() shouldBe expectedResult
         }
 
-        "Project dependencies are detected correctly".config(tags = setOf(AndroidTag)) {
+        "Project dependencies are detected correctly" {
             val packageFile = projectDir.resolve("app/build.gradle")
             val expectedResult = patchExpectedResult(
                 projectDir.parentFile.resolve("gradle-android-expected-output-app.yml"),
@@ -66,7 +65,7 @@ class GradleAndroidFunTest : StringSpec() {
             result.toYaml() shouldBe expectedResult
         }
 
-        "External dependencies are detected correctly".config(tags = setOf(AndroidTag)) {
+        "External dependencies are detected correctly" {
             val packageFile = projectDir.resolve("lib/build.gradle")
             val expectedResult = patchExpectedResult(
                 projectDir.parentFile.resolve("gradle-android-expected-output-lib.yml"),
@@ -80,7 +79,7 @@ class GradleAndroidFunTest : StringSpec() {
         }
 
         "Cyclic dependencies over multiple libraries can be handled".config(
-            tags = setOf(AndroidTag, ExpensiveTag),
+            tags = setOf(ExpensiveTag),
             enabled = false
         ) {
             val cyclicProjectDir = File("src/funTest/assets/projects/synthetic/gradle-android-cyclic").absoluteFile
