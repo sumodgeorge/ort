@@ -29,9 +29,8 @@ import org.ossreviewtoolkit.model.TextLocation
 import org.ossreviewtoolkit.scanner.scanners.AbstractScannerFunTest
 import org.ossreviewtoolkit.utils.ort.createOrtTempDir
 import org.ossreviewtoolkit.utils.spdx.getLicenseText
-import org.ossreviewtoolkit.utils.test.ExpensiveTag
 
-class ScanCodeScannerFunTest : AbstractScannerFunTest(setOf(ExpensiveTag)) {
+class ScanCodeScannerFunTest : AbstractScannerFunTest() {
     override val scanner = ScanCode("ScanCode", scannerConfig, downloaderConfig)
 
     override val expectedFileLicenses = listOf(

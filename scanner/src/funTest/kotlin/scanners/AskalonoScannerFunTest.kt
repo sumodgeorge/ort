@@ -21,8 +21,9 @@ package org.ossreviewtoolkit.scanner.scanners
 
 import org.ossreviewtoolkit.model.LicenseFinding
 import org.ossreviewtoolkit.model.TextLocation
+import org.ossreviewtoolkit.utils.test.NightlyTag
 
-class AskalonoScannerFunTest : AbstractScannerFunTest() {
+class AskalonoScannerFunTest : AbstractScannerFunTest(setOf(NightlyTag)) {
     override val scanner = Askalono("Askalono", scannerConfig, downloaderConfig)
 
     override val expectedFileLicenses = listOf(

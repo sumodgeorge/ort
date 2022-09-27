@@ -29,7 +29,6 @@ import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.Package
 import org.ossreviewtoolkit.model.VcsInfo
 import org.ossreviewtoolkit.model.VcsType
-import org.ossreviewtoolkit.utils.test.ExpensiveTag
 import org.ossreviewtoolkit.utils.test.createTestTempDir
 
 private const val REPO_URL = "https://svn.code.sf.net/p/sendmessage/code"
@@ -50,7 +49,7 @@ class SubversionDownloadFunTest : StringSpec() {
     }
 
     init {
-        "Subversion can download a given revision".config(tags = setOf(ExpensiveTag)) {
+        "Subversion can download a given revision" {
             val pkg = Package.EMPTY.copy(vcsProcessed = VcsInfo(VcsType.SUBVERSION, REPO_URL, REPO_REV))
             val expectedFiles = listOf(
                 ".svn",
@@ -68,7 +67,7 @@ class SubversionDownloadFunTest : StringSpec() {
             actualFiles.joinToString("\n") shouldBe expectedFiles.joinToString("\n")
         }
 
-        "Subversion can download only a single path".config(tags = setOf(ExpensiveTag)) {
+        "Subversion can download only a single path" {
             val pkg = Package.EMPTY.copy(
                 vcsProcessed = VcsInfo(VcsType.SUBVERSION, REPO_URL, REPO_REV, path = REPO_PATH)
             )
@@ -90,7 +89,7 @@ class SubversionDownloadFunTest : StringSpec() {
             actualFiles.joinToString("\n") shouldBe expectedFiles.joinToString("\n")
         }
 
-        "Subversion can download a given tag".config(tags = setOf(ExpensiveTag)) {
+        "Subversion can download a given tag" {
             val pkg = Package.EMPTY.copy(vcsProcessed = VcsInfo(VcsType.SUBVERSION, REPO_URL, REPO_TAG))
             val expectedFiles = listOf(
                 ".svn",
@@ -109,7 +108,7 @@ class SubversionDownloadFunTest : StringSpec() {
             actualFiles.joinToString("\n") shouldBe expectedFiles.joinToString("\n")
         }
 
-        "Subversion can download based on a version".config(tags = setOf(ExpensiveTag)) {
+        "Subversion can download based on a version" {
             val pkg = Package.EMPTY.copy(
                 id = Identifier("Test:::$REPO_VERSION"),
                 vcsProcessed = VcsInfo(VcsType.SUBVERSION, REPO_URL, "")
@@ -121,7 +120,7 @@ class SubversionDownloadFunTest : StringSpec() {
             workingTree.getRevision() shouldBe REPO_REV_FOR_VERSION
         }
 
-        "Subversion can download only a single path based on a version".config(tags = setOf(ExpensiveTag)) {
+        "Subversion can download only a single path based on a version" {
             val pkg = Package.EMPTY.copy(
                 id = Identifier("Test:::$REPO_VERSION"),
                 vcsProcessed = VcsInfo(VcsType.SUBVERSION, REPO_URL, "", path = REPO_PATH_FOR_VERSION)

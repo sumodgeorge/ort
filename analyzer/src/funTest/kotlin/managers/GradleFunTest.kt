@@ -36,7 +36,6 @@ import org.ossreviewtoolkit.utils.common.ProcessCapture
 import org.ossreviewtoolkit.utils.ort.normalizeVcsUrl
 import org.ossreviewtoolkit.utils.test.DEFAULT_ANALYZER_CONFIGURATION
 import org.ossreviewtoolkit.utils.test.DEFAULT_REPOSITORY_CONFIGURATION
-import org.ossreviewtoolkit.utils.test.ExpensiveTag
 import org.ossreviewtoolkit.utils.test.USER_DIR
 import org.ossreviewtoolkit.utils.test.patchActualResult
 import org.ossreviewtoolkit.utils.test.patchExpectedResult
@@ -125,7 +124,7 @@ class GradleFunTest : StringSpec() {
         }
 
         // Disabled as it causes hangs and memory issues on CI.
-        "Is compatible with Gradle >= 2.14".config(tags = setOf(ExpensiveTag), enabled = false) {
+        "Is compatible with Gradle >= 2.14".config(enabled = false) {
             // See https://blog.gradle.org/java-9-support-update.
             val gradleVersionsThatSupportJava9 = arrayOf(
                 row("4.6", ""),

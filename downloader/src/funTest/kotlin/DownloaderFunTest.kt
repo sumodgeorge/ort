@@ -42,7 +42,6 @@ import org.ossreviewtoolkit.model.VcsInfo
 import org.ossreviewtoolkit.model.VcsType
 import org.ossreviewtoolkit.model.config.DownloaderConfiguration
 import org.ossreviewtoolkit.utils.common.VCS_DIRECTORIES
-import org.ossreviewtoolkit.utils.test.ExpensiveTag
 import org.ossreviewtoolkit.utils.test.createTestTempDir
 
 class DownloaderFunTest : StringSpec() {
@@ -53,7 +52,7 @@ class DownloaderFunTest : StringSpec() {
     }
 
     init {
-        "Downloads and unpacks JAR source package".config(tags = setOf(ExpensiveTag)) {
+        "Downloads and unpacks JAR source package" {
             val pkg = Package(
                 id = Identifier(
                     type = "Maven",
@@ -90,7 +89,7 @@ class DownloaderFunTest : StringSpec() {
             outputDir.walk().count() shouldBe 234
         }
 
-        "Download of JAR source package fails when hash is incorrect".config(tags = setOf(ExpensiveTag)) {
+        "Download of JAR source package fails when hash is incorrect" {
             val pkg = Package(
                 id = Identifier(
                     type = "Maven",
@@ -121,7 +120,7 @@ class DownloaderFunTest : StringSpec() {
                     "Hash(value=0123456789abcdef0123456789abcdef01234567, algorithm=SHA-1)."
         }
 
-        "Falls back to downloading source package when download from VCS fails".config(tags = setOf(ExpensiveTag)) {
+        "Falls back to downloading source package when download from VCS fails" {
             val downloaderConfiguration = DownloaderConfiguration(
                 sourceCodeOrigins = listOf(SourceCodeOrigin.VCS, SourceCodeOrigin.ARTIFACT)
             )
@@ -166,7 +165,7 @@ class DownloaderFunTest : StringSpec() {
             outputDir.walk().count() shouldBe 234
         }
 
-        "Falls back to downloading from VCS when source package download fails".config(tags = setOf(ExpensiveTag)) {
+        "Falls back to downloading from VCS when source package download fails" {
             val downloaderConfiguration = DownloaderConfiguration(
                 sourceCodeOrigins = listOf(SourceCodeOrigin.ARTIFACT, SourceCodeOrigin.VCS)
             )
@@ -211,7 +210,7 @@ class DownloaderFunTest : StringSpec() {
             outputDir.walk().onEnter { it.name !in VCS_DIRECTORIES }.count() shouldBe 588
         }
 
-        "Can download a TGZ source artifact from SourceForge".config(tags = setOf(ExpensiveTag)) {
+        "Can download a TGZ source artifact from SourceForge" {
             val artifactUrl = "https://master.dl.sourceforge.net/project/tyrex/tyrex/Tyrex%201.0.1/tyrex-1.0.1-src.tgz"
             val pkg = Package(
                 id = Identifier(
@@ -243,7 +242,7 @@ class DownloaderFunTest : StringSpec() {
             tyrexDir.walk().count() shouldBe 409
         }
 
-        "Can download a ZIP source artifact from GitHub".config(tags = setOf(ExpensiveTag)) {
+        "Can download a ZIP source artifact from GitHub" {
             val artifactUrl = "https://github.com/microsoft/tslib/archive/1.10.0.zip"
             val pkg = Package(
                 id = Identifier(

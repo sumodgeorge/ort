@@ -23,4 +23,4 @@ package org.ossreviewtoolkit.utils.test
 
 import io.kotest.core.Tag
 
-object ExpensiveTag : Tag()
+object NightlyTag : Tag()

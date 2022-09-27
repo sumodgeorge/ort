@@ -31,6 +31,7 @@ import org.ossreviewtoolkit.model.VcsInfo
 import org.ossreviewtoolkit.model.VcsType
 import org.ossreviewtoolkit.utils.common.unpack
 import org.ossreviewtoolkit.utils.ort.ortDataDirectory
+import org.ossreviewtoolkit.utils.test.NightlyTag
 import org.ossreviewtoolkit.utils.test.createSpecTempDir
 
 class CvsWorkingTreeFunTest : StringSpec({
@@ -43,23 +44,23 @@ class CvsWorkingTreeFunTest : StringSpec({
         zipFile.unpack(zipContentDir)
     }
 
-    "Detected CVS version is not empty" {
+    "Detected CVS version is not empty".config(tags = setOf(NightlyTag)) {
         val version = cvs.getVersion()
         println("CVS version $version detected.")
         version shouldNotBe ""
     }
 
-    "CVS detects non-working-trees" {
+    "CVS detects non-working-trees".config(tags = setOf(NightlyTag)) {
         cvs.getWorkingTree(ortDataDirectory).isValid() shouldBe false
     }
 
-    "CVS correctly detects URLs to remote repositories" {
+    "CVS correctly detects URLs to remote repositories".config(tags = setOf(NightlyTag)) {
         cvs.isApplicableUrl(":pserver:anonymous@a.cvs.sourceforge.net:/cvsroot/tyrex") shouldBe true
         cvs.isApplicableUrl(":ext:jrandom@cvs.foobar.com:/usr/local/cvs") shouldBe true
         cvs.isApplicableUrl("https://svn.code.sf.net/p/grepwin/code/") shouldBe false
     }
 
-    "Detected CVS working tree information is correct" {
+    "Detected CVS working tree information is correct".config(tags = setOf(NightlyTag)) {
         val workingTree = cvs.getWorkingTree(zipContentDir)
 
         workingTree.isValid() shouldBe true
@@ -74,7 +75,7 @@ class CvsWorkingTreeFunTest : StringSpec({
         workingTree.getPathToRoot(zipContentDir.resolve("lib")) shouldBe "lib"
     }
 
-    "CVS correctly lists remote branches" {
+    "CVS correctly lists remote branches".config(tags = setOf(NightlyTag)) {
         val expectedBranches = listOf(
             "JHOVE_1_7",
             "branch_lpeer",
@@ -86,7 +87,7 @@ class CvsWorkingTreeFunTest : StringSpec({
         workingTree.listRemoteBranches().joinToString("\n") shouldBe expectedBranches.joinToString("\n")
     }
 
-    "CVS correctly lists remote tags" {
+    "CVS correctly lists remote tags".config(tags = setOf(NightlyTag)) {
         val expectedTags = listOf(
             "JHOVE_1_1",
             "JHOVE_1_11",

@@ -21,8 +21,9 @@ package org.ossreviewtoolkit.scanner.scanners
 
 import org.ossreviewtoolkit.model.LicenseFinding
 import org.ossreviewtoolkit.model.TextLocation
+import org.ossreviewtoolkit.utils.test.NightlyTag
 
-class BoyterLcScannerFunTest : AbstractScannerFunTest() {
+class BoyterLcScannerFunTest : AbstractScannerFunTest(setOf(NightlyTag)) {
     override val scanner = BoyterLc("BoyterLc", scannerConfig, downloaderConfig)
 
     override val expectedFileLicenses = listOf(

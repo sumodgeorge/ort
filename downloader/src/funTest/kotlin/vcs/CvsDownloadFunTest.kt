@@ -31,7 +31,7 @@ import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.Package
 import org.ossreviewtoolkit.model.VcsInfo
 import org.ossreviewtoolkit.model.VcsType
-import org.ossreviewtoolkit.utils.test.ExpensiveTag
+import org.ossreviewtoolkit.utils.test.NightlyTag
 import org.ossreviewtoolkit.utils.test.createTestTempDir
 
 private const val REPO_URL = ":pserver:anonymous@a.cvs.sourceforge.net:/cvsroot/xmlenc"
@@ -49,7 +49,7 @@ class CvsDownloadFunTest : StringSpec() {
     }
 
     init {
-        "CVS can download a given revision".config(tags = setOf(ExpensiveTag), enabled = false) {
+        "CVS can download a given revision".config(tags = setOf(NightlyTag), enabled = false) {
             val pkg = Package.EMPTY.copy(vcsProcessed = VcsInfo(VcsType.CVS, REPO_URL, REPO_REV))
             val expectedFiles = listOf(
                 "CVS",
@@ -70,7 +70,7 @@ class CvsDownloadFunTest : StringSpec() {
             buildXmlStatus.stdout should contain("Working revision:\t1.159")
         }
 
-        "CVS can download only a single path".config(tags = setOf(ExpensiveTag), enabled = false) {
+        "CVS can download only a single path".config(tags = setOf(NightlyTag), enabled = false) {
             val pkg = Package.EMPTY.copy(vcsProcessed = VcsInfo(VcsType.CVS, REPO_URL, REPO_REV, path = REPO_PATH))
             val expectedFiles = listOf(
                 File(REPO_PATH, "changes.xml")
@@ -87,7 +87,7 @@ class CvsDownloadFunTest : StringSpec() {
             actualFiles.joinToString("\n") shouldBe expectedFiles.joinToString("\n")
         }
 
-        "CVS can download based on a version".config(tags = setOf(ExpensiveTag), enabled = false) {
+        "CVS can download based on a version".config(tags = setOf(NightlyTag), enabled = false) {
             val pkg = Package.EMPTY.copy(
                 id = Identifier("Test:::$REPO_VERSION"),
                 vcsProcessed = VcsInfo(VcsType.CVS, REPO_URL, "")
@@ -105,7 +105,7 @@ class CvsDownloadFunTest : StringSpec() {
             buildXmlStatus.stdout should contain("Working revision:\t1.159")
         }
 
-        "CVS can download only a single path based on a version".config(tags = setOf(ExpensiveTag), enabled = false) {
+        "CVS can download only a single path based on a version".config(tags = setOf(NightlyTag), enabled = false) {
             val pkg = Package.EMPTY.copy(
                 id = Identifier("Test:::$REPO_VERSION"),
                 vcsProcessed = VcsInfo(VcsType.CVS, REPO_URL, "", path = REPO_PATH_FOR_VERSION)

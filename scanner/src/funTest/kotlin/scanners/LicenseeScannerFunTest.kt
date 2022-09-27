@@ -21,9 +21,9 @@ package org.ossreviewtoolkit.scanner.scanners
 
 import org.ossreviewtoolkit.model.LicenseFinding
 import org.ossreviewtoolkit.model.TextLocation
-import org.ossreviewtoolkit.utils.test.ExpensiveTag
+import org.ossreviewtoolkit.utils.test.NightlyTag
 
-class LicenseeScannerFunTest : AbstractScannerFunTest(setOf(ExpensiveTag)) {
+class LicenseeScannerFunTest : AbstractScannerFunTest(setOf(NightlyTag)) {
     override val scanner = Licensee("Licensee", scannerConfig, downloaderConfig)
 
     override val expectedFileLicenses = listOf(

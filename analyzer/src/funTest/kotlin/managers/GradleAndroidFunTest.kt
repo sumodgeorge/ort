@@ -28,7 +28,6 @@ import org.ossreviewtoolkit.downloader.VersionControlSystem
 import org.ossreviewtoolkit.utils.ort.normalizeVcsUrl
 import org.ossreviewtoolkit.utils.test.DEFAULT_ANALYZER_CONFIGURATION
 import org.ossreviewtoolkit.utils.test.DEFAULT_REPOSITORY_CONFIGURATION
-import org.ossreviewtoolkit.utils.test.ExpensiveTag
 import org.ossreviewtoolkit.utils.test.USER_DIR
 import org.ossreviewtoolkit.utils.test.patchExpectedResult
 
@@ -78,10 +77,7 @@ class GradleAndroidFunTest : StringSpec() {
             result.toYaml() shouldBe expectedResult
         }
 
-        "Cyclic dependencies over multiple libraries can be handled".config(
-            tags = setOf(ExpensiveTag),
-            enabled = false
-        ) {
+        "Cyclic dependencies over multiple libraries can be handled".config(tags = setOf(NightlyTag)) {
             val cyclicProjectDir = File("src/funTest/assets/projects/synthetic/gradle-android-cyclic").absoluteFile
             val packageFile = cyclicProjectDir.resolve("app/build.gradle")
             val expectedResult = patchExpectedResult(
