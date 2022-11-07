@@ -19,14 +19,33 @@
 
 package org.ossreviewtoolkit.analyzer.managers.utils
 
+import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.WordSpec
 import io.kotest.matchers.collections.containExactly
 import io.kotest.matchers.should
+import io.kotest.matchers.shouldBe
 
 import java.io.File
 
+import org.ossreviewtoolkit.model.Identifier
+
 class NuGetSupportTest : WordSpec({
-    "getRegistrationsBaseUrls" should {
+    "getIdentifier()" should {
+        "split the namespace from the name" {
+            assertSoftly {
+                getIdentifier("SharpCompress", "0.23.0") shouldBe
+                        Identifier("NuGet::SharpCompress:0.23.0")
+                getIdentifier("System.IO", "4.1.0") shouldBe
+                        Identifier("NuGet:System:IO:4.1.0")
+                getIdentifier("System.IO.Compression", "4.3.0") shouldBe
+                        Identifier("NuGet:System.IO:Compression:4.3.0")
+                getIdentifier("System.IO.Compression.ZipFile", "4.0.1") shouldBe
+                        Identifier("NuGet:System.IO:Compression.ZipFile:4.0.1")
+            }
+        }
+    }
+
+    "getRegistrationsBaseUrls()" should {
         "parse index urls" {
             val reader = NuGetConfigFileReader()
             val configFile = File("src/funTest/assets/projects/synthetic/nuget/nuget.config")

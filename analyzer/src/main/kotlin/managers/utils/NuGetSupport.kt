@@ -148,8 +148,12 @@ class NuGetSupport(serviceIndexUrls: List<String> = listOf(DEFAULT_SERVICE_INDEX
     }
 
     private fun getAllPackageData(id: Identifier): NuGetAllPackageData {
-        // Note: The package name in the URL is case-sensitive and must be lower-case!
-        val lowerId = id.name.lowercase()
+        // Note: The id in the URL is case-sensitive and must be lower-case!
+        val lowerId = if (id.namespace.isNotEmpty()) {
+            "${id.namespace}.${id.name}"
+        } else {
+            id.name
+        }.lowercase()
 
         val data = registrationsBaseUrls.firstNotNullOfOrNull { baseUrl ->
             runCatching {
@@ -289,8 +293,12 @@ private fun parseAuthors(spec: PackageSpec?): SortedSet<String> =
 private fun resolveLocalSpec(definitionFile: File): File? =
     definitionFile.parentFile?.resolve(".nuspec")?.takeIf { it.isFile }
 
-private fun getIdentifier(name: String, version: String) =
-    Identifier(type = "NuGet", namespace = "", name = name, version = version)
+internal fun getIdentifier(name: String, version: String): Identifier {
+    val namespace = name.split('.', limit = 3).toMutableList()
+    val nameWithoutNamespace = namespace.removeLast()
+    val namespaceWithoutName = namespace.joinToString(".")
+    return Identifier(type = "NuGet", namespace = namespaceWithoutName, name = nameWithoutNamespace, version = version)
+}
 
 data class NuGetDependency(
     val name: String,
@@ -357,13 +365,19 @@ private fun PackageManager.getProject(
 ): Project {
     val spec = resolveLocalSpec(definitionFile)?.let { NuGetSupport.XML_MAPPER.readValue<PackageSpec>(it) }
 
-    return Project(
-        id = Identifier(
+    val id = if (spec != null) {
+        getIdentifier(spec.metadata.id, spec.metadata.version)
+    } else {
+        Identifier(
             type = managerName,
             namespace = "",
-            name = spec?.metadata?.id ?: definitionFile.relativeTo(analysisRoot).invariantSeparatorsPath,
-            version = spec?.metadata?.version.orEmpty()
-        ),
+            name = definitionFile.relativeTo(analysisRoot).invariantSeparatorsPath,
+            version = ""
+        )
+    }
+
+    return Project(
+        id = id,
         definitionFilePath = VersionControlSystem.getPathInfo(definitionFile).path,
         authors = parseAuthors(spec),
         declaredLicenses = parseLicenses(spec),
