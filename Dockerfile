@@ -45,7 +45,14 @@ RUN --mount=type=cache,target=/tmp/.gradle/ \
     scripts/set_gradle_proxy.sh && \
     ./gradlew --no-daemon --stacktrace -Pversion=$ORT_VERSION :cli:installDist :helper-cli:startScripts
 
-FROM eclipse-temurin:11-jdk-alpine AS run
+FROM vborja/asdf-alpine AS python
+
+USER root
+RUN apk --update add --no-cache gcc
+USER asdf
+RUN asdf plugin-add python && asdf install python 3.8.0
+
+FROM python AS run
 
 COPY --from=build --link /usr/local/src/ort/cli/build/install/ort /opt/ort
 
