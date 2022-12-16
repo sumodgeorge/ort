@@ -31,6 +31,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.logging.log4j.kotlin.Logging
 
 import org.ossreviewtoolkit.utils.ort.OkHttpClientHelper
+import java.io.ByteArrayInputStream
 
 /**
  * A [FileStorage] that stores files on an HTTP server.
@@ -65,6 +66,7 @@ class HttpFileStorage(
     override fun exists(path: String): Boolean {
         val request = Request.Builder()
             .headers(headers.toHeaders())
+            //.addHeader("Connection", "close")
             .cacheControl(CacheControl.Builder().maxAge(cacheMaxAgeInSeconds, TimeUnit.SECONDS).build())
             .head()
             .url(urlForPath(path))
@@ -76,6 +78,7 @@ class HttpFileStorage(
     override fun read(path: String): InputStream {
         val request = Request.Builder()
             .headers(headers.toHeaders())
+            //.addHeader("Connection", "close")
             .cacheControl(CacheControl.Builder().maxAge(cacheMaxAgeInSeconds, TimeUnit.SECONDS).build())
             .get()
             .url(urlForPath(path))
@@ -83,8 +86,30 @@ class HttpFileStorage(
 
         logger.debug { "Reading file from storage: ${request.url}" }
 
-        val response = OkHttpClientHelper.execute(request)
-        if (response.isSuccessful) {
+        val response = try {
+            OkHttpClientHelper.execute(request)
+        } catch (e: Exception) {
+            dmesg("HttpFileStorage.read: $path failed:")
+            dmesg(e.stackTraceToString())
+
+            dmesg("REQUEST:")
+            dmesg("  url: " + request.url)
+            dmesg("  headers: " + request.headers.joinToString("  \n"))
+
+            with (OkHttpClientHelper.buildClient()) {
+                dmesg("CLIENT:")
+                dmesg("  retry: " + retryOnConnectionFailure)
+                dmesg("  readTimeoutMillis: " + readTimeoutMillis)
+                dmesg("  callTimeoutMillis: " + callTimeoutMillis)
+                dmesg("  connectTimeoutMillis: " + connectTimeoutMillis)
+            }
+            dmesg("REQUEST PATH FAILED: " + path)
+            dmesg(request.url.toString())
+            dmesg(e.stackTraceToString())
+            throw e
+        }
+
+         if (response.isSuccessful) {
             response.body?.let { body ->
                 return body.byteStream()
             }
@@ -101,6 +126,7 @@ class HttpFileStorage(
         inputStream.use {
             val request = Request.Builder()
                 .headers(headers.toHeaders())
+                //.addHeader("Connection", "close")
                 .put(it.readBytes().toRequestBody())
                 .url(urlForPath(path))
                 .build()
@@ -118,4 +144,8 @@ class HttpFileStorage(
     }
 
     private fun urlForPath(path: String) = "$url/$path$query"
+}
+
+private fun dmesg(str: String) {
+    println("XXX $str")
 }

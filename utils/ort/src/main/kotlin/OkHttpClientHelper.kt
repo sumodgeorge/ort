@@ -69,6 +69,7 @@ object OkHttpClientHelper : Logging {
     private const val CACHE_DIRECTORY = "cache/http"
     private const val MAX_CACHE_SIZE_IN_BYTES = 1024L * 1024L * 1024L
     private const val READ_TIMEOUT_IN_SECONDS = 30L
+    private const val CONNECT_TIMEOUT_IN_SECONDS = 30L
 
     private val clients = ConcurrentHashMap<BuilderConfiguration, OkHttpClient>()
 
@@ -101,8 +102,10 @@ object OkHttpClientHelper : Logging {
                     }
                 }.getOrThrow()
             }
+            .retryOnConnectionFailure(true)
             .cache(cache)
             .connectionSpecs(specs)
+            .connectTimeout(Duration.ofSeconds(CONNECT_TIMEOUT_IN_SECONDS))
             .readTimeout(Duration.ofSeconds(READ_TIMEOUT_IN_SECONDS))
             .authenticator(Authenticator.JAVA_NET_AUTHENTICATOR)
             .proxyAuthenticator(Authenticator.JAVA_NET_AUTHENTICATOR)
