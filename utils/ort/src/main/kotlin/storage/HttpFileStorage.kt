@@ -25,6 +25,7 @@ import java.time.Duration
 import java.util.concurrent.TimeUnit
 
 import okhttp3.CacheControl
+import okhttp3.ConnectionPool
 import okhttp3.Headers.Companion.toHeaders
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -33,6 +34,7 @@ import org.apache.logging.log4j.kotlin.Logging
 
 import org.ossreviewtoolkit.utils.ort.OkHttpClientHelper
 import org.ossreviewtoolkit.utils.ort.execute
+import javax.sql.ConnectionPoolDataSource
 
 private const val HTTP_CLIENT_CONNECT_TIMEOUT_IN_SECONDS = 30L
 
@@ -62,7 +64,7 @@ class HttpFileStorage(
      * The max age of an HTTP cache entry in seconds. Defaults to 0 which always validates the cached response with the
      * remote server.
      */
-    private val cacheMaxAgeInSeconds: Int = 0
+    private val cacheMaxAgeInSeconds: Int = 1
 ) : FileStorage {
     companion object : Logging
 
@@ -70,10 +72,12 @@ class HttpFileStorage(
         OkHttpClientHelper.buildClient {
             connectTimeout(Duration.ofSeconds(HTTP_CLIENT_CONNECT_TIMEOUT_IN_SECONDS))
             retryOnConnectionFailure(true)
+            connectionPool(ConnectionPool(5, 120, TimeUnit.SECONDS))
         }
     }
 
     override fun exists(path: String): Boolean {
+        dmesg("exists: " + path)
         val request = Request.Builder()
             .headers(headers.toHeaders())
             .cacheControl(CacheControl.Builder().maxAge(cacheMaxAgeInSeconds, TimeUnit.SECONDS).build())
@@ -95,6 +99,7 @@ class HttpFileStorage(
     }
 
     override fun read(path: String): InputStream {
+        dmesg("read: " + path)
         val request = Request.Builder()
             .headers(headers.toHeaders())
             .cacheControl(CacheControl.Builder().maxAge(cacheMaxAgeInSeconds, TimeUnit.SECONDS).build())
@@ -128,6 +133,7 @@ class HttpFileStorage(
     }
 
     override fun write(path: String, inputStream: InputStream) {
+        dmesg("write: " + path)
         inputStream.use {
             val request = Request.Builder()
                 .headers(headers.toHeaders())
