@@ -34,7 +34,7 @@ import org.apache.logging.log4j.kotlin.Logging
 import org.ossreviewtoolkit.utils.ort.OkHttpClientHelper
 import org.ossreviewtoolkit.utils.ort.execute
 
-private const val HTTP_CLIENT_CONNECT_TIMEOUT_IN_SECONDS = 60L
+private const val HTTP_CLIENT_CONNECT_TIMEOUT_IN_SECONDS = 30L
 
 /**
  * A [FileStorage] that stores files on an HTTP server.
@@ -69,6 +69,7 @@ class HttpFileStorage(
     private val httpClient by lazy {
         OkHttpClientHelper.buildClient {
             connectTimeout(Duration.ofSeconds(HTTP_CLIENT_CONNECT_TIMEOUT_IN_SECONDS))
+            retryOnConnectionFailure(true)
         }
     }
 
@@ -80,7 +81,17 @@ class HttpFileStorage(
             .url(urlForPath(path))
             .build()
 
-        return httpClient.execute(request).isSuccessful
+        val response =  try {
+            httpClient.execute(request)
+        } catch (e: Exception) {
+            dmesg("exists: $path")
+            dmesg("url: " + request.url)
+            dmesg("exception: " + e.stackTraceToString())
+
+            throw e
+        }
+
+        return response.isSuccessful
     }
 
     override fun read(path: String): InputStream {
@@ -93,7 +104,16 @@ class HttpFileStorage(
 
         logger.debug { "Reading file from storage: ${request.url}" }
 
-        val response = httpClient.execute(request)
+        val response =  try {
+            httpClient.execute(request)
+        } catch (e: Exception) {
+            dmesg("read: $path")
+            dmesg("url: " + request.url)
+            dmesg("exception: " + e.stackTraceToString())
+
+            throw e
+        }
+
         if (response.isSuccessful) {
             response.body?.let { body ->
                 return body.byteStream()
@@ -117,10 +137,20 @@ class HttpFileStorage(
 
             logger.debug { "Writing file to storage: ${request.url}" }
 
-            return httpClient.execute(request).use { response ->
-                if (!response.isSuccessful) {
+            val response =  try {
+                httpClient.execute(request)
+            } catch (e: Exception) {
+                dmesg("write: $path")
+                dmesg("url: " + request.url)
+                dmesg("exception: " + e.stackTraceToString())
+
+                throw e
+            }
+
+            response.use {
+                if (!it.isSuccessful) {
                     throw IOException(
-                        "Could not store file at '${request.url}': ${response.code} - ${response.message}"
+                        "Could not store file at '${request.url}': ${it.code} - ${it.message}"
                     )
                 }
             }
@@ -128,4 +158,8 @@ class HttpFileStorage(
     }
 
     private fun urlForPath(path: String) = "$url/$path$query"
+}
+
+private fun dmesg(str: String) {
+    println("XXX " + str)
 }
