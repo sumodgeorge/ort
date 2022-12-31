@@ -74,9 +74,20 @@ class PdfTemplateReporter : AsciiDocTemplateReporter("pdf", "PdfTemplate") {
                 // support the "uri:classloader:" syntax and can only refer to local paths, see
                 // https://github.com/asciidoctor/asciidoctor-pdf/issues/2383. So extract the images resource to the
                 // temporary directory and point to there.
-                val imagesDir = outputDir.resolve("images").safeMkdirs()
-                extractImageResources(imagesDir)
-                attribute("pdf-themesdir", imagesDir.absolutePath)
+                //val imagesDir = outputDir.resolve("images").safeMkdirs()
+                //extractImageResources(imagesDir)
+                //attribute("pdf-themesdir", "uri:classloader:/images")
+
+                // --force-overwrite
+                //report
+                //-f
+                //PdfTemplate
+                //--report-option
+                //PdfTemplate=template.id=vulnerability_report
+                //-i
+                //C:\Users\Sebastian\Downloads\ort-results-semver4j\advisor\advisor-result.yml
+                //-o
+                //out\semver\reporter
 
                 "uri:classloader:/templates/asciidoc/pdf-theme.yml"
             }
