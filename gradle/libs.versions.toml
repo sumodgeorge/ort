@@ -2,7 +2,7 @@
 detektPlugin = "1.22.0"
 dokkaPlugin = "1.7.20"
 downloadPlugin = "5.3.0"
-graalPlugin = "0.12.0"
+graalVmNativeImagePlugin = "0.9.19"
 graphQlPlugin = "6.3.3"
 ideaExtPlugin = "1.1.7"
 kotlinPlugin = "1.8.0"
@@ -21,8 +21,6 @@ diskLruCache = "2.0.2"
 exposed = "0.41.1"
 flexmark = "0.64.0"
 freemarker = "2.3.31"
-# @keep this version which is only being used via get().
-graal = "22.2.0"
 greenmail = "1.6.12"
 hikari = "5.0.1"
 hoplite = "2.7.0"
@@ -65,7 +63,7 @@ xz = "1.9"
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektPlugin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaPlugin" }
 download = { id = "de.undercouch.download", version.ref = "downloadPlugin" }
-graal = { id = "com.palantir.graal", version.ref = "graalPlugin" }
+graalVmNativeImage = { id = "org.graalvm.buildtools.native", version.ref = "graalVmNativeImagePlugin" }
 graphQl = { id = "com.expediagroup.graphql", version.ref = "graphQlPlugin" }
 ideaExt = { id = "org.jetbrains.gradle.plugin.idea-ext", version.ref = "ideaExtPlugin" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinPlugin" }

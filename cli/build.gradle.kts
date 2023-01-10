@@ -18,6 +18,9 @@
  */
 
 import java.nio.charset.Charset
+import java.nio.file.Files
+
+import org.graalvm.buildtools.gradle.tasks.BuildNativeImageTask
 
 @Suppress("DSL_SCOPE_VIOLATION") // See https://youtrack.jetbrains.com/issue/KTIJ-19369.
 plugins {
@@ -25,7 +28,7 @@ plugins {
     application
 
     // Apply third-party plugins.
-    alias(libs.plugins.graal)
+    alias(libs.plugins.graalVmNativeImage)
 }
 
 application {
@@ -33,32 +36,58 @@ application {
     mainClass.set("org.ossreviewtoolkit.cli.OrtMainKt")
 }
 
-graal {
-    graalVersion(libs.versions.graal.get())
-    javaVersion("17")
+graalvmNative {
+    // For options see https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html.
+    binaries {
+        named("main") {
+            imageName.set("ort")
 
-    // Build a standalone native executable or report a failure.
-    option("--no-fallback")
+            buildArgs.add(
+                listOf(
+                    "ch.qos.logback.classic.Level",
+                    "ch.qos.logback.classic.Logger",
+                    "ch.qos.logback.classic.PatternLayout",
+                    "ch.qos.logback.core.CoreConstants",
+                    "ch.qos.logback.core.status.InfoStatus",
+                    "ch.qos.logback.core.status.StatusBase",
+                    "ch.qos.logback.core.util.Loader",
+                    "ch.qos.logback.core.util.StatusPrinter",
+                    "org.slf4j.LoggerFactory"
+                ).joinToString(",", prefix = "--initialize-at-build-time=")
+            )
+        }
+    }
 
-    // Work-around for:
-    // "WARNING: Unknown module: org.graalvm.nativeimage.llvm specified to --add-exports"
-    option("-J--add-modules")
-    option("-JALL-SYSTEM")
+    metadataRepository {
+        enabled.set(true)
+    }
+}
 
-    // Work-around for:
-    // "Error: Classes that should be initialized at run time got initialized during image building"
-    option("--initialize-at-build-time=org.jruby.util.RubyFileTypeDetector")
+tasks.named<BuildNativeImageTask>("nativeCompile").configure {
+    val toolchainDir = options.get().javaLauncher.get().executablePath.asFile.parentFile.run {
+        if (name == "bin") parentFile else this
+    }
 
-    // Work-around for:
-    // "Unsupported method java.lang.invoke.MethodHandleNatives.setCallSiteTargetNormal() is reachable"
-    option("--report-unsupported-elements-at-runtime")
+    val toolchainFiles = toolchainDir.walkTopDown().filter { it.isFile }
+    val knownEmptyFiles = setOf(".registry", "provisioned.ok")
+    val emptyFiles = toolchainFiles.filter { it.length() == 0L && it.name !in knownEmptyFiles }
 
-    // Work-around for:
-    // "Error: Non-reducible loop requires too much duplication"
-    option("-H:MaxDuplicationFactor=3.0")
+    val links = toolchainFiles.mapNotNull { file ->
+        emptyFiles.singleOrNull { it != file && it.name == file.name }?.let {
+            file to it
+        }
+    }
 
-    mainClass("org.ossreviewtoolkit.cli.OrtMainKt")
-    outputName("ort")
+    // Fix up symbolic links that Gradle's Copy-task cannot handle, see https://github.com/gradle/gradle/issues/3982.
+    links.forEach { (target, link) ->
+        logger.quiet("Fixing up '$link' to link to '$target'.")
+
+        if (link.delete()) {
+            Files.createSymbolicLink(link.toPath(), target.toPath())
+        } else {
+            logger.warn("Unable to delete '$link'.")
+        }
+    }
 }
 
 tasks.named<CreateStartScripts>("startScripts").configure {
