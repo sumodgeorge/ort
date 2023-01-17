@@ -159,8 +159,8 @@ dependencies {
     testImplementation(libs.kotestAssertionsCore)
     testImplementation(libs.kotestRunnerJunit5)
 
-    funTestImplementation(sourceSets["main"].output)
-    funTestImplementation(sourceSets["test"].output)
+    //funTestImplementation(sourceSets["main"].output)
+    //funTestImplementation(sourceSets["test"].output)
 }
 
-configurations["funTestImplementation"].extendsFrom(configurations["testImplementation"])
+//configurations["funTestImplementation"].extendsFrom(configurations["testImplementation"])

@@ -39,7 +39,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.ideaExt)
-    alias(libs.plugins.kotlin)
     alias(libs.plugins.versionCatalogUpdate)
     alias(libs.plugins.versions)
 }
@@ -125,7 +124,7 @@ allprojects {
     }
 }
 
-subprojects {
+/*subprojects {
     version = rootProject.version
 
     if (name == "reporter-web-app" || name == "buildSrc") return@subprojects
@@ -358,7 +357,7 @@ subprojects {
             }
         }
     }
-}
+}*/
 
 // Gradle's "dependencies" task selector only executes on a single / the current project [1]. However, sometimes viewing
 // all dependencies at once is beneficial, e.g. for debugging version conflict resolution.
