@@ -188,20 +188,24 @@ class AnalyzerCommand : OrtCommand(
 
         val analyzer = Analyzer(analyzerConfiguration, labels)
 
-        val curationProviders = buildList {
-            addAll(PackageCurationProviderFactory.create(ortConfig.packageCurationProviders))
+        val enabledCurationProviders = PackageCurationProviderFactory.create(ortConfig.packageCurationProviders) +
+                repositoryConfiguration.curations.packages.let {
+                    if (ortConfig.enableRepositoryPackageCurations) {
+                        mapOf("Repository" to SimplePackageCurationProvider(it))
+                    } else {
+                        if (it.isNotEmpty()) {
+                            logger.warn {
+                                "Existing package curations from '$ORT_REPO_CONFIG_FILENAME' are not applied because the feature " +
+                                        "is disabled."
+                            }
+                        }
 
-            val repositoryPackageCurations = repositoryConfiguration.curations.packages
-
-            if (ortConfig.enableRepositoryPackageCurations) {
-                add(SimplePackageCurationProvider(repositoryPackageCurations))
-            } else if (repositoryPackageCurations.isNotEmpty()) {
-                logger.warn {
-                    "Existing package curations from '$ORT_REPO_CONFIG_FILENAME' are not applied because the feature " +
-                            "is disabled."
+                        emptyMap()
+                    }
                 }
-            }
-        }
+
+        println("The following package curation providers are enabled:")
+        println("\t" + enabledCurationProviders.keys.joinToString().ifEmpty { "<None>" })
 
         println("Analyzing project path:\n\t$inputDir")
 
@@ -225,7 +229,7 @@ class AnalyzerCommand : OrtCommand(
             println("Found $count definition file(s) from ${filesPerManager.size} package manager(s) in total.")
         }
 
-        val ortResult = analyzer.analyze(info, CompositePackageCurationProvider(curationProviders)).mergeLabels(labels)
+        val ortResult = analyzer.analyze(info, CompositePackageCurationProvider(enabledCurationProviders.values)).mergeLabels(labels)
 
         outputDir.safeMkdirs()
         writeOrtResult(ortResult, outputFiles, "analyzer")
@@ -246,7 +250,7 @@ class AnalyzerCommand : OrtCommand(
         )
 
         val curationCount = packages.sumOf { it.curations.size }
-        println("Applied $curationCount curation(s) from ${curationProviders.size} provider(s).")
+        println("Applied $curationCount curation(s) from ${enabledCurationProviders.size} provider(s).")
 
         val resolutionProvider = DefaultResolutionProvider.create(ortResult, resolutionsFile)
         val (resolvedIssues, unresolvedIssues) = analyzerRun.result.collectIssues().flatMap { it.value }
