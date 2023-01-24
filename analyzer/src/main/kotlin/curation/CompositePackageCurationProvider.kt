@@ -21,6 +21,7 @@ package org.ossreviewtoolkit.analyzer.curation
 
 import org.ossreviewtoolkit.analyzer.PackageCurationProvider
 import org.ossreviewtoolkit.model.Identifier
+import org.ossreviewtoolkit.model.Package
 import org.ossreviewtoolkit.model.PackageCuration
 
 /**
@@ -28,11 +29,11 @@ import org.ossreviewtoolkit.model.PackageCuration
  * single curation provider. All matching curations of all providers are provided in order of declaration.
  */
 class CompositePackageCurationProvider(private val providers: List<PackageCurationProvider>) : PackageCurationProvider {
-    override fun getCurationsFor(pkgIds: Collection<Identifier>): Map<Identifier, List<PackageCuration>> {
+    override fun getCurationsFor(packages: Collection<Package>): Map<Identifier, List<PackageCuration>> {
         val allCurations = mutableMapOf<Identifier, MutableList<PackageCuration>>()
 
         providers.forEach { provider ->
-            provider.getCurationsFor(pkgIds).forEach { (pkgId, curations) ->
+            provider.getCurationsFor(packages).forEach { (pkgId, curations) ->
                 allCurations.getOrPut(pkgId) { mutableListOf() } += curations
             }
         }

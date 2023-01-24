@@ -98,7 +98,7 @@ class AnalyzerResultBuilder(private val curationProvider: PackageCurationProvide
      * independently of a [ProjectAnalyzerResult].
      */
     fun addPackages(packageSet: Set<Package>): AnalyzerResultBuilder {
-        val (curations, duration) = measureTimedValue { curationProvider.getCurationsFor(packageSet.map { it.id }) }
+        val (curations, duration) = measureTimedValue { curationProvider.getCurationsFor(packageSet) }
 
         logger.debug { "Getting package curations took $duration." }
 
