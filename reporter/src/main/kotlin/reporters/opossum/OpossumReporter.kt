@@ -37,7 +37,6 @@ import org.apache.commons.compress.compressors.gzip.GzipParameters
 import org.apache.logging.log4j.kotlin.Logging
 
 import org.ossreviewtoolkit.downloader.VcsHost
-import org.ossreviewtoolkit.model.CuratedPackage
 import org.ossreviewtoolkit.model.DependencyNode
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.OrtIssue
@@ -47,7 +46,6 @@ import org.ossreviewtoolkit.model.Project
 import org.ossreviewtoolkit.model.ScanResult
 import org.ossreviewtoolkit.model.VcsInfo
 import org.ossreviewtoolkit.model.utils.getPurlType
-import org.ossreviewtoolkit.model.utils.toPurl
 import org.ossreviewtoolkit.reporter.Reporter
 import org.ossreviewtoolkit.reporter.ReporterInput
 import org.ossreviewtoolkit.utils.spdx.SpdxExpression
@@ -483,20 +481,6 @@ class OpossumReporter : Reporter {
                 OpossumSignal(source, comment = issue.toString(), followUp = true, excludeFromNotice = true)
             addSignal(signal, paths.map { resolvePath(it) }.toSortedSet())
         }
-
-        fun addPackagesThatAreRootless(analyzerResultPackages: Set<CuratedPackage>) {
-            val rootlessPackages = analyzerResultPackages.filter { packageToRoot[it.metadata.id] == null }
-
-            rootlessPackages.forEach {
-                val path = resolvePath("/lost+found", it.metadata.id.toPurl())
-                addSignal(signalFromPkg(it.metadata), sortedSetOf(path))
-                addPackageRoot(it.metadata.id, path, Int.MAX_VALUE, it.metadata.vcsProcessed)
-            }
-
-            if (rootlessPackages.isNotEmpty()) {
-                logger.warn { "There are ${rootlessPackages.size} packages that had no root." }
-            }
-        }
     }
 
     override val type = "Opossum"
@@ -530,14 +514,9 @@ class OpossumReporter : Reporter {
 
         val analyzerResult = ortResult.analyzer?.result ?: return opossumInput
         val analyzerResultProjects = analyzerResult.projects
-        val analyzerResultPackages = analyzerResult.packages
 
         analyzerResultProjects.forEach { project ->
             opossumInput.addProject(project, ortResult)
-        }
-
-        if (ortResult.getExcludes().scopes.isEmpty()) {
-            opossumInput.addPackagesThatAreRootless(analyzerResultPackages)
         }
 
         analyzerResult.issues.entries.forEach { (id, issues) ->
