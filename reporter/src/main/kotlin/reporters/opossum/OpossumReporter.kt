@@ -512,14 +512,11 @@ class OpossumReporter : Reporter {
             opossumInput.frequentLicenses += OpossumFrequentLicense(it.id, it.fullName, licenseText)
         }
 
-        val analyzerResult = ortResult.analyzer?.result ?: return opossumInput
-        val analyzerResultProjects = analyzerResult.projects
-
-        analyzerResultProjects.forEach { project ->
+        ortResult.getProjects().forEach { project ->
             opossumInput.addProject(project, ortResult)
         }
 
-        analyzerResult.issues.entries.forEach { (id, issues) ->
+        ortResult.analyzer?.result?.issues.orEmpty().forEach { (id, issues) ->
             issues.forEach { issue ->
                 val source = opossumInput.addExternalAttributionSource(
                     key = "ORT-Analyzer-Issues",
