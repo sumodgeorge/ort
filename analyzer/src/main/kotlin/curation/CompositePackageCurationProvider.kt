@@ -27,7 +27,9 @@ import org.ossreviewtoolkit.model.PackageCuration
  * A curation provider that does not provide any curations on its own, but composes the given list of [providers] to a
  * single curation provider. All matching curations of all providers are provided in order of declaration.
  */
-class CompositePackageCurationProvider(private val providers: List<PackageCurationProvider>) : PackageCurationProvider {
+class CompositePackageCurationProvider(
+    private val providers: List<PackageCurationProvider>
+) : PackageCurationProvider() {
     override fun getCurationsFor(pkgIds: Collection<Identifier>): Map<Identifier, List<PackageCuration>> {
         val allCurations = mutableMapOf<Identifier, MutableList<PackageCuration>>()
 

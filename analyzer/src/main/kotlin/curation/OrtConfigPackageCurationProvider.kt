@@ -51,7 +51,7 @@ class OrtConfigPackageCurationProviderFactory : PackageCurationProviderFactory<U
  * A [PackageCurationProvider] that provides [PackageCuration]s loaded from the
  * [ort-config repository](https://github.com/oss-review-toolkit/ort-config).
  */
-open class OrtConfigPackageCurationProvider : PackageCurationProvider {
+open class OrtConfigPackageCurationProvider : PackageCurationProvider() {
     companion object : Logging
 
     private val curationsDir by lazy {
