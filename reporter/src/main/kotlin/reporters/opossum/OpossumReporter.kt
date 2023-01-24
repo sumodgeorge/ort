@@ -380,7 +380,9 @@ class OpossumReporter : Reporter {
                 val rootForScope = resolvePath(definitionFilePath, scopeName)
                 val dependencies = ortResult.dependencyNavigator.directDependencies(project, scopeName).toList()
 
-                if (dependencies.isNotEmpty()) addAttributionBreakpoint(rootForScope)
+                if (dependencies.isNotEmpty()) {
+                    addAttributionBreakpoint(rootForScope)
+                }
 
                 dependencies.forEach { dependency ->
                     addDependency(dependency, ortResult, rootForScope)
