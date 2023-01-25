@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * The base configuration model of the advisor.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class AdvisorConfiguration(
     val gitHubDefects: GitHubDefectsConfiguration? = null,
     val nexusIq: NexusIqConfiguration? = null,

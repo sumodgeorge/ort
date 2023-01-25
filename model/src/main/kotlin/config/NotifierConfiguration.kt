@@ -19,6 +19,9 @@
 
 package org.ossreviewtoolkit.model.config
 
+import com.fasterxml.jackson.annotation.JsonInclude
+
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class NotifierConfiguration(
     val mail: SendMailConfiguration? = null,
     val jira: JiraConfiguration? = null

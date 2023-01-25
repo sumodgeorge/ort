@@ -28,7 +28,7 @@ import org.ossreviewtoolkit.utils.spdx.SpdxConstants
 /**
  * The configuration model of the scanner.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class ScannerConfiguration(
     /**
      * A flag to indicate whether packages that have a concluded license and authors set (to derive copyrights from)

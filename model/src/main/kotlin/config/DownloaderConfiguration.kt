@@ -19,10 +19,11 @@
 
 package org.ossreviewtoolkit.model.config
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import org.ossreviewtoolkit.model.SourceCodeOrigin
 import org.ossreviewtoolkit.model.licenses.LicenseCategory
 import org.ossreviewtoolkit.utils.common.getDuplicates
-
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class DownloaderConfiguration(
     /**
      * Toggle whether to allow downloads using symbolic names that point to moving revisions, like Git branches.

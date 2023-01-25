@@ -19,11 +19,13 @@
 
 package org.ossreviewtoolkit.model.config
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * The base configuration model of the reporter.
  */
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class ReporterConfiguration(
     /**
      * Reporter specific configuration options. The key needs to match the name of the reporter class, e.g. "FossId"

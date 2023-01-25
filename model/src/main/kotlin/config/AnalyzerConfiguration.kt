@@ -21,7 +21,7 @@ package org.ossreviewtoolkit.model.config
 
 import com.fasterxml.jackson.annotation.JsonInclude
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class AnalyzerConfiguration(
     /**
      * Enable the analysis of projects that use version ranges to declare their dependencies. If set to true,

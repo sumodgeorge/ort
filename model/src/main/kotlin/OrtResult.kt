@@ -29,6 +29,7 @@ import org.ossreviewtoolkit.model.config.Resolutions
 import org.ossreviewtoolkit.model.config.orEmpty
 import org.ossreviewtoolkit.utils.common.zipWithCollections
 import org.ossreviewtoolkit.utils.spdx.model.SpdxLicenseChoice
+import java.io.File
 
 /**
  * The common output format for the analyzer and scanner. It contains information about the scanned repository, and the
@@ -506,4 +507,44 @@ data class OrtResult(
         } else {
             labels[label] == value
         }
+}
+
+fun main() {
+    val ortRepoDir = File("/home/frank/devel/ort/ort")
+    val extensions = setOf("json", "yml", "yaml")
+    val candidateFiles = ortRepoDir.walkBottomUp().filter { it.isFile && it.extension in extensions }.toList().filter {
+        it.absolutePath.contains("/src/funTest/assets/") || it.absolutePath.contains("/src/test/assets/")
+    }
+
+    println("candidateFiles: " + candidateFiles.size)
+
+    patch<OrtResult>(candidateFiles, "OrtResult")
+    patch<AnalyzerResult>(candidateFiles, "AnalyzerResult")
+    patch<AnalyzerRun>(candidateFiles, "AnalyzerRun")
+    patch<ScanResult>(candidateFiles, "ScanResult")
+    patch<ScannerRun>(candidateFiles, "ScannerRun")
+    patch<EvaluatorRun>(candidateFiles, "EvaluatorRun")
+    patch<ProjectAnalyzerResult>(candidateFiles, "ProjectAnalyzerResult")
+}
+
+private inline fun <reified T : Any> patch(candidateFiles: Collection<File>, type: String) {
+    val patched = mutableSetOf<File>()
+
+    candidateFiles.forEachIndexed { i, file ->
+      //  println("[$i / ${candidateFiles.size}] $type: Try  ${file.absoluteFile}...")
+        if (i == -1) println("x")
+
+        try {
+            val t = file.readValue<T>()
+            file.writeValue(t)
+            patched += file
+        //    println("PATCHED!")
+        } catch (e: Exception) {
+
+
+        }
+    }
+
+    println("patched ${patched.size} files of type $type:")
+    println(patched.joinToString("\n") + "\n")
 }
