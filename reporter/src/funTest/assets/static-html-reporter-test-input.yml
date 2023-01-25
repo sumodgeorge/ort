@@ -54,8 +54,7 @@ analyzer:
     max_memory: 8321499136
     variables: {}
     tool_versions: {}
-  config:
-    allow_dynamic_versions: false
+  config: {}
   result:
     projects:
     - id: "Gradle:org.ossreviewtoolkit:nested-fake-project:1.0.0"
@@ -63,7 +62,7 @@ analyzer:
       declared_licenses:
       - "GPL-3.0-only WITH GCC-exception-3.1 AND CC-BY-NC-3.0"
       declared_licenses_processed:
-        spdx_expression: "GPL-3.0-only WITH GCC-exception-3.1 AND CC-BY-NC-3.0"
+        spdx_expression: "CC-BY-NC-3.0 AND GPL-3.0-only WITH GCC-exception-3.1"
       vcs:
         type: ""
         url: ""
@@ -115,7 +114,7 @@ analyzer:
             dependencies:
             - id: "Maven:org.apache.commons:commons-lang3:3.5"
     packages:
-    - package:
+    - metadata:
         id: "Ant:junit:junit:4.12"
         purl: "pkg:maven/junit/junit@4.12"
         declared_licenses:
@@ -148,7 +147,7 @@ analyzer:
           revision: ""
           path: ""
       curations: []
-    - package:
+    - metadata:
         id: "Maven:com.foobar:foobar:1.0"
         purl: "pkg:maven/com.foobar/foobar@1.0"
         authors:
@@ -187,7 +186,7 @@ analyzer:
         curation:
           comment: "Foobar is an imaginary dependency and offers a license choice"
           concluded_license: "GPL-2.0-only OR MIT"
-    - package:
+    - metadata:
         id: "Maven:com.h2database:h2:1.4.200"
         purl: "pkg:maven/com.h2database/h2@1.4.200"
         authors:
@@ -195,7 +194,7 @@ analyzer:
         declared_licenses:
         - "MPL 2.0 or EPL 1.0"
         declared_licenses_processed:
-          spdx_expression: "MPL-2.0 OR EPL-1.0"
+          spdx_expression: "EPL-1.0 OR MPL-2.0"
           mapped:
             MPL 2.0 or EPL 1.0: "MPL-2.0 OR EPL-1.0"
         concluded_license: "MPL-2.0 OR EPL-1.0"
@@ -226,7 +225,7 @@ analyzer:
         curation:
           comment: "H2 database offers a license choice"
           concluded_license: "MPL-2.0 OR EPL-1.0"
-    - package:
+    - metadata:
         id: "Maven:org.apache.commons:commons-lang3:3.5"
         purl: "pkg:maven/org.apache.commons/commons-lang3@3.5"
         declared_licenses:
@@ -260,7 +259,7 @@ analyzer:
           revision: ""
           path: ""
       curations: []
-    - package:
+    - metadata:
         id: "Maven:org.apache.commons:commons-text:1.1"
         purl: "pkg:maven/org.apache.commons/commons-text@1.1"
         declared_licenses:
@@ -293,7 +292,7 @@ analyzer:
           revision: ""
           path: ""
       curations: []
-    - package:
+    - metadata:
         id: "Maven:org.example.test:example-component:1.11"
         purl: "pkg:maven/org.example.test/example-component@1.11"
         declared_licenses:
@@ -325,7 +324,7 @@ analyzer:
           revision: ""
           path: ""
       curations: []
-    - package:
+    - metadata:
         id: "Maven:org.hamcrest:hamcrest-core:1.3"
         purl: "pkg:maven/org.hamcrest/hamcrest-core@1.3"
         declared_licenses:
@@ -371,34 +370,7 @@ scanner:
     max_memory: 8321499136
     variables: {}
     tool_versions: {}
-  config:
-    skip_concluded: false
-    create_missing_archives: false
-    detected_license_mapping:
-      LicenseRef-scancode-agpl-generic-additional-terms: "NOASSERTION"
-      LicenseRef-scancode-generic-cla: "NOASSERTION"
-      LicenseRef-scancode-generic-exception: "NOASSERTION"
-      LicenseRef-scancode-generic-export-compliance: "NOASSERTION"
-      LicenseRef-scancode-generic-tos: "NOASSERTION"
-      LicenseRef-scancode-generic-trademark: "NOASSERTION"
-      LicenseRef-scancode-gpl-generic-additional-terms: "NOASSERTION"
-      LicenseRef-scancode-patent-disclaimer: "NOASSERTION"
-      LicenseRef-scancode-warranty-disclaimer: "NOASSERTION"
-      LicenseRef-scancode-other-copyleft: "NOASSERTION"
-      LicenseRef-scancode-other-permissive: "NOASSERTION"
-      LicenseRef-scancode-free-unknown: "NOASSERTION"
-      LicenseRef-scancode-unknown: "NOASSERTION"
-      LicenseRef-scancode-unknown-license-reference: "NOASSERTION"
-      LicenseRef-scancode-unknown-spdx: "NOASSERTION"
-    ignore_patterns:
-    - "**/*.ort.yml"
-    - "**/*.spdx.yml"
-    - "**/*.spdx.yaml"
-    - "**/*.spdx.json"
-    - "**/META-INF/DEPENDENCIES"
-    - "**/META-INF/DEPENDENCIES.txt"
-    - "**/META-INF/NOTICE"
-    - "**/META-INF/NOTICE.txt"
+  config: {}
   scan_results:
     Ant:junit:junit:4.12:
     - provenance:
@@ -482,8 +454,8 @@ scanner:
         end_time: "1970-01-01T00:00:00Z"
         package_verification_code: "0000000000000000000000000000000000000000"
         licenses:
-        - license: "(GPL-2.0-only WITH Classpath-exception-2.0 AND BSD-3-Clause)\
-            \ OR MIT"
+        - license: "(GPL-2.0-only WITH Classpath-exception-2.0 AND BSD-3-Clause) OR\
+            \ MIT"
           location:
             path: "analyzer/src/funTest/assets/projects/synthetic/gradle/lib/src/code.cpp"
             start_line: 1
@@ -617,10 +589,10 @@ advisor:
           start_time: "1970-01-01T00:00:00Z"
           end_time: "1970-01-01T00:00:00Z"
           issues:
-            - timestamp: "1970-01-01T00:00:00Z"
-              source: "VulnerableCode"
-              message: "A test issue."
-              severity: "ERROR"
+          - timestamp: "1970-01-01T00:00:00Z"
+            source: "VulnerableCode"
+            message: "A test issue."
+            severity: "ERROR"
         defects: []
         vulnerabilities:
         - id: "VULCOID-VULNERABILITY_ID"
